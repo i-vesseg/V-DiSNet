@@ -1,7 +1,9 @@
 # V-DiSNet
 One-shot Active Learning for brain vessel segmentation
 
-<img src="imgs/pipeline.png" >
+<img src="imgs/Pipeline-1.png" >
+
+<img src="imgs/Pipeline-2.png" >
 
 This is the implementation of the V-DiSNet framework for vessel brain MRI segmentation in **Pytorch**.
 
