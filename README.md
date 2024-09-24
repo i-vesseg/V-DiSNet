@@ -34,7 +34,7 @@ This is the implementation of the V-DiSNet framework for vessel brain MRI segmen
 ### CAS
 
 - Download the dataset (MR Images + Corresponding vessels masks) from the following [link](https://codalab.lisn.upsaclay.fr/competitions/9804).
-- Download the [A2V](linktoA2V.it)-generated brain masks from the following [link](linktoA2V.it) or generate by using other softwares (e.g. [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) or [HDBET](https://github.com/MIC-DKFZ/HD-BET))
+- Download the [A2V](https://github.com/i-vesseg/MultiVesSeg)-generated brain masks from the following [link](https://drive.google.com/drive/folders/15r0ay_WW6V6DXtSbTm0wG7IavcjXTluK?usp=drive_link) or generate by using other softwares (e.g. [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) or [HDBET](https://github.com/MIC-DKFZ/HD-BET))
 - Expected folder organization:
 
     ```bash
