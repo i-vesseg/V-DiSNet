@@ -1,0 +1,8 @@
+nibabel==5.0.1 # for reading nifti files
+numpy==1.23.5
+opencv_python==4.7.0.68 # for image processing (rough mask generation)
+regex==2023.3.23 # for string processing (Dataset loading)
+scikit_learn==1.2.2 # for metrics and GMM
+torch==1.11.0 # Dataloader
+torchvision==0.12.0 # Normalize and transforms
+tqdm==4.65.0
