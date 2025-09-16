@@ -12,7 +12,8 @@ V-DiSNet is a novel one-shot active learning framework for brain vessel segmenta
 
 ### IXI
 
-- Download the dataset (MR Images + Corresponding annotated brain and vessels masks) from the official IXI [webpage](https://brain-development.org/ixi-dataset).
+- Download the dataset (MR Images) from the official IXI [webpage](https://brain-development.org/ixi-dataset).
+- Download the Vessel Annotations from the official [VesselVerse Repo](https://github.com/i-vesseg/VesselverseDatasets) (Or see the official [Webpage](https://i-vesseg.github.io/vesselverse/) for more information!)
 - Expected folder organization:
 
     ```bash
