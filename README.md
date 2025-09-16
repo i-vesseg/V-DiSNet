@@ -1,0 +1,164 @@
+# V-DiSNet: One-shot Active Learning for Vessel Segmentation
+This repository contains the official implementation of the [Paper](https://papers.miccai.org/miccai-2025/paper/2457_paper.pdf)"One-shot active learning for vessel segmentation" by D. Falcetta, H. Chaptoukaev, F. Galati, and M.A. Zuluaga. Early Accepted at MICCAI 2025 🎉
+
+<img src="imgs/Pipeline-1.png" >
+
+<img src="imgs/Pipeline-2.png" >
+
+## Overview
+V-DiSNet is a novel one-shot active learning framework for brain vessel segmentation that selects informative patches in a **single iteration** without expensive retraining cycles.
+
+## Open Datasets
+
+### IXI
+
+- Download the dataset (MR Images + Corresponding annotated brain and vessels masks) from the official IXI [webpage](https://brain-development.org/ixi-dataset).
+- Expected folder organization:
+
+    ```bash
+    .
+    └── IXI/
+        ├── volumes/
+        │   ├── IXI002-Guys-0828-MRA.nii.gz
+        │   ├── IXI012-HH-1211-MRA.nii.gz
+        │   └── ...
+        ├── masks/
+        │   ├── IXI002-Guys-0828-MRA_mask.nii.gz
+        │   ├── IXI012-HH-1211-MRA_mask.nii.gz
+        │   └── ...
+        └── vessels/
+            ├── IXI002-Guys-0828-MRA_vessel_mask2.nii.gz
+            └── IXI012-HH-1211-MRA_vessel_mask2.nii.gz
+            └── ...
+    ```
+
+### CAS
+
+- Download the dataset (MR Images + Corresponding vessels masks) from the following [link](https://codalab.lisn.upsaclay.fr/competitions/9804).
+- Download the [A2V](https://github.com/i-vesseg/MultiVesSeg)-generated brain masks from the following [link](https://drive.google.com/drive/folders/15r0ay_WW6V6DXtSbTm0wG7IavcjXTluK?usp=drive_link) or generate by using other softwares (e.g. [FreeSurfer](https://surfer.nmr.mgh.harvard.edu/) or [HDBET](https://github.com/MIC-DKFZ/HD-BET))
+- Expected folder organization:
+
+    ```bash
+    .
+    └── CAS/
+        ├── volumes/
+        │   ├── 000.nii.gz
+        │   ├── 001.nii.gz
+        │   └── ...
+        ├── masks/
+        │   ├── pred_000.nii.gz
+        │   ├── pred_001.nii.gz
+        │   └── ...
+        └── vessels/
+            ├── vessels_001.nii.gz
+            ├── vessels_001.nii.gz
+            └── ...
+    ```
+
+    
+## Installation
+
+```bash
+git clone https://github.com/i-vesseg/V-DiSNet.git
+cd V-DiSNet
+pip install -r requirements.txt
+```
+
+## Preprocessing - Step 1
+    
+- Run the preprocessing notebooks for both the IXI and CAS dataset:
+
+    ```bash
+    .
+    └── preprocessings
+        ├── preprocessing_IXI.ipynb
+        └── preprocessing_CAS.ipynb
+    ```
+- Adjust the corresponding input and output path in the first section (*Prepare dataset*)
+
+## Preprocessing - Step 2
+    
+- Run the preprocessing file *load_patches* for both the IXI and CAS dataset to split each volume into patches:
+
+    ```bash
+    python patch_dataloader/load_patches.py --dataset IXIJ
+    python patch_dataloader/load_patches.py --dataset CASJ
+    ```
+- Adjust the corresponding input and output paths and parameters values(size of patch, standardization, etc.) at the end of the file.
+
+
+## Dictionary Learning - Binary Vessel Latent space extraction
+    
+- Run the dictionary learning module to train an encoder to generate latent representations of binary vessel patches from IXI:
+
+    ```bash
+    python script_py/VPATCHES_SDL.py
+    
+                 (../VPATCHES_SDL-NL.py)
+                 (../VPATCHES_VDL.py)
+                 (../VPATCHES_VDL-NL.py)
+    ```
+- Adjust the parameters values(batch_size, epochs, etc.).
+- You can also run different variation of the Dictionary Learning Model (Non linear decoder (NL), Variance-regularized (VDL)).
+- Results of this step are saved by default in the folder *~/results/*
+## Contrastive Learning - Vessel Patches Latent space extraction
+    
+- Run the following notebook: 
+
+    ```bash
+    .
+    └── get_embedding_DL
+        └── COMPLETE_PIPELINE_FINALE.ipynb
+         
+    ```
+- Adjust, if needed, to input and output paths in the section *1 - Load Data*
+- Modify the datetime of section *2 - Create Embeddings* to load the best dictionary learning model (trained in the previous step)
+
+#### Steps of the *COMPLETE_PIPELINE_FINALE* Notebook
+
+###### Part 1: Dictionary Learning
+- Load IXI dataset and the best encoder from the previous step.
+- Extract the latent representation for the binary vessel patches.
+- Compute PSNR and save the vessel dictionary.
+- Visualize the latent space in 2D using T-SNE.
+- Find clusters by using k-means on the latent representations 
+
+###### Part 2: Contrastive Learning:
+- Train a contrastive learning model by using patches from IXI as input and previous k-means classes as label
+- This allows to generate a latent space where similar brain patches are close to each other based on the vessels present in the patch.
+- Extract the encoder from the contrastive model and use it to generate a latent space of patches from the non-annotated dataset CAS.
+- Find clusters by using k-means on the latent representations. 
+
+## One-shot Active Learning
+    
+- Run the one-shot active learning file *FINAL_EXPERIMENT* to sample different percentages of CAS patches (to be annotated by an external oracle) and use the selected annotated patches to train a segmentation model (WNET):
+
+    ```bash
+    python get_embedding_DL/FINAL_EXPERIMENT.py
+         
+    ```
+
+
+
+## Citation
+
+```bibtex
+@inproceedings{falcetta2025vdisnet,
+author = { Falcetta, Daniele and Marciano, Vincenzo and Yang, Kaiyuan and Cleary, Jon and Legris, Loïc and Rizzaro, Massimiliano Domenico and Pitsiorlas, Ioannis and Chaptoukaev, Hava and Lemasson, Benjamin and Menze, Bjoern and Zuluaga, Maria A. },
+title = { { VesselVerse: A Dataset and Collaborative Framework for Vessel Annotation } }, 
+booktitle = {Medical Image Computing and Computer Assisted Intervention -- MICCAI 2025},
+year = {2025},
+publisher = {Springer Nature Switzerland},
+volume = { LNCS 15972 },
+month = {October},
+pages = { 656 -- 666 },
+}
+```
+
+## Contact
+
+- **Maria A. Zuluaga** - [maria.zuluaga@eurecom.fr](mailto:maria.zuluaga@eurecom.fr)
+- **Daniele Falcetta** - [daniele.falcetta@eurecom.fr](mailto:daniele.falcetta@eurecom.fr)
+
+## Acknowledgments
+Supported by ANR JCJC project IVESSEG (22-CE45-0015-01) and 3IA Côte d'Azur (ANR-23-IACL-0001).

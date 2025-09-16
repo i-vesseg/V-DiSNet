@@ -1,0 +1,7 @@
+results/
+
+preprocessings/info_CAS.pkl
+preprocessings/info_IXI.pkl
+
+*.pyc
+*__pycache__/
